@@ -16,7 +16,7 @@ public class Main {
         taskManager.createEpic(new Epic(4,"Epic 2", "NEW", "Description"));
 
         SubTask subTask = taskManager.createSubTask(new SubTask(1,"SubTask 1", "NEW", "Description", 2));
-        taskManager.createSubTask(new SubTask(7,"SubTask 1", "NEW", "Description", 4));
+        taskManager.createSubTask(new SubTask(7,"SubTask 2", "NEW", "Description", 4));
         taskManager.createSubTask(new SubTask(6,"SubTask 3", "NEW", "Description", 4));
 
         System.out.println("Получение списка Task: " + taskManager.getListTask());
