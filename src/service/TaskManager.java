@@ -93,28 +93,28 @@ public class TaskManager {
 		}
 	}
 
-	public ArrayList<Task> getListTask() { //получение списка task //ввести проверку на нул?
+	public ArrayList<Task> getListTask() {
 		if (tasks == null) {
 			return null;
 		}
 		return new ArrayList<>(tasks.values());
 	}
 
-	public ArrayList<Epic> getListEpic() { //получение списка epic //ввести проверку на нул?
+	public ArrayList<Epic> getListEpic() {
 		if (epics == null) {
 			return null;
 		}
 		return new ArrayList<>(epics.values());
 	}
 
-	public ArrayList<SubTask> getListSubTask() { //получение списка subtask мб через класс эпик???
+	public ArrayList<SubTask> getListSubTask() {
 		if (subTasks == null) {
 			return null;
 		}
 		return new ArrayList<>(subTasks.values());
 	}
 
-	public ArrayList<SubTask> getSubTaskByEpic(Epic epic) { //метод получения списка подзадач определенного эпика
+	public ArrayList<SubTask> getSubTaskByEpic(Epic epic) {
 		if (epic == null) {
 			return null;
 		}
