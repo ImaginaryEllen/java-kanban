@@ -84,7 +84,7 @@ public class TaskManager {
 
 	public String calculateEpicStatus(Epic epic, SubTask subTask) {
 		String subTaskStatus = subTask.getStatus();
-				if (subTaskStatus.equals("NEW") || epic.subTaskList.isEmpty()) {
+		if (subTaskStatus.equals("NEW") || epic.subTaskList.isEmpty()) {
 			return "NEW";
 		} else if (subTaskStatus.equals("DONE")) {
 			return "DONE";
