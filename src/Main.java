@@ -9,20 +9,20 @@ public class Main {
 
         TaskManager taskManager = new TaskManager();
 
-        Task task = taskManager.createTask(new Task(8, "Task 1", "NEW", "Description"));
-        taskManager.createTask(new Task(5, "Task 2", "NEW", "Description"));
+        Task task = taskManager.createTask(new Task("Task 1", "NEW", "Description"));
+        taskManager.createTask(new Task("Task 2", "NEW", "Description"));
 
-        Epic epic = taskManager.createEpic(new Epic(2,"Epic 1", "NEW", "Description"));
-        taskManager.createEpic(new Epic(4,"Epic 2", "NEW", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Epic 1", "Description"));
+        taskManager.createEpic(new Epic("Epic 2", "Description"));
 
-        SubTask subTask = taskManager.createSubTask(new SubTask(1,"SubTask 1", "NEW", "Description", 2));
-        taskManager.createSubTask(new SubTask(7,"SubTask 2", "NEW", "Description", 4));
-        taskManager.createSubTask(new SubTask(6,"SubTask 3", "NEW", "Description", 4));
+        SubTask subTask = taskManager.createSubTask(new SubTask("SubTask 1", "NEW", "Description",3));
+        taskManager.createSubTask(new SubTask("SubTask 2", "IN_PROGRESS", "Description", 3));
+        taskManager.createSubTask(new SubTask("SubTask 3", "NEW", "Description", 4));
 
-        System.out.println("Получение списка Task: " + taskManager.getListTask());
-        System.out.println("Получение списка Epic: " + taskManager.getListEpic());
-        System.out.println("Получение списка SubTask: " + taskManager.getListSubTask());
-        System.out.println("Получение списка SubTask по Epic: " + taskManager.getSubTaskByEpic(epic));
+        System.out.println("Получение списка Task: " + taskManager.getTaskList());
+        System.out.println("Получение списка Epic: " + taskManager.getEpicList());
+        System.out.println("Получение списка SubTask: " + taskManager.getSubTaskList());
+        System.out.println("Получение списка SubTask по Epic: " + taskManager.getSubTasksByEpic(epic));
 
         Task taskFromManager = taskManager.getTask(task.getId());
         Epic epicFromManager = taskManager.getEpic(epic.getId());
@@ -32,15 +32,15 @@ public class Main {
         System.out.println("Получение Epic по идентификатору: " + epicFromManager);
         System.out.println("Получение SubTask по идентификатору: " + subTaskFromManager);
 
-        taskFromManager.setName("NewTaskName");
+        taskFromManager.setName("NewName");
         taskManager.updateTask(taskFromManager);
         System.out.println("Обновили Task: " + taskFromManager);
 
-        epicFromManager.setName("NewEpicName");
+        epicFromManager.setDescription("NewDescription");
         taskManager.updateEpic(epicFromManager);
         System.out.println("Обновили Epic: " + epicFromManager);
 
-        subTaskFromManager.setName("NewSubTaskName");
+        subTaskFromManager.setStatus("DONE");
         taskManager.updateSubTask(subTaskFromManager);
         System.out.println("Обновили SubTask: " + subTaskFromManager);
 
@@ -48,14 +48,14 @@ public class Main {
         System.out.println("Удаляем по ID Task: " + taskFromManager);
         taskManager.deleteEpic(epicFromManager.getId());
         System.out.println("Удаляем по ID Epic: " + epicFromManager);
-        //taskManager.deleteSubTask(subTaskFromManager.getId()); //для теста работы методы
+        //taskManager.deleteSubTask(subTaskFromManager.getId()); //для теста работы метода
         //System.out.println("Удаляем по ID SubTask: " + subTaskFromManager);
 
-        taskManager.deleteAllTask();
+        taskManager.deleteAllTasks();
         System.out.println("Удаляем полностью Task: " + taskFromManager);
-        taskManager.deleteAllEpic();
-        System.out.println("Удаляем полностью Epic: " + epicFromManager);
-        taskManager.deleteAllSubTask();
+        //taskManager.deleteAllEpics(); //для теста работы метода
+        //System.out.println("Удаляем полностью Epic: " + epicFromManager);
+        taskManager.deleteAllSubTasks();
         System.out.println("Удаляем полностью SubTask: " + subTaskFromManager);
 
     }

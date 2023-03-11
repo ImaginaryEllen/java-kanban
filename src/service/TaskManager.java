@@ -24,14 +24,13 @@ public class TaskManager {
 		return task;
 	}
 
-	public Epic createEpic(Epic epic) { //автоматически присвоить статус
+	public Epic createEpic(Epic epic) {
 		epic.setId(++idNumber);
-		epic.setStatus("NEW"); //или сделать вызов метода со статусами
 		epics.put(idNumber, epic);
 		return epic;
 	}
 
-	public SubTask createSubTask(SubTask subTask) { //При создании сабтаска стоит пересчитать статус эпика
+	public SubTask createSubTask(SubTask subTask) {
 		subTask.setId(++idNumber);
 		Epic epic = epics.get(subTask.getEpicId());
 		subTasks.put(idNumber, subTask);
@@ -69,6 +68,7 @@ public class TaskManager {
 		Epic epicSaved = epics.get(epic.getId());
 		epicSaved.setName(epic.getName());
 		epicSaved.setDescription(epic.getDescription());
+		calculateEpicStatus(epic);
 	}
 
 	public void updateSubTask(SubTask subTask) {
@@ -79,7 +79,7 @@ public class TaskManager {
 		}
 	}
 
-	private String calculateEpicStatus(Epic epic) { //полностью переделать
+	private void calculateEpicStatus(Epic epic) {
 		int subTaskNewCount = 0;
 		int subTaskDoneCount = 0;
 		String statusSubTask;
@@ -94,12 +94,12 @@ public class TaskManager {
 		}
 		int size = subTaskList.size();
 		if (size == subTaskNewCount || size == 0) {
-			return "NEW";
+			epic.setStatus("NEW");
 		} else if (size == subTaskDoneCount) {
-			return "DONE";
+			epic.setStatus("DONE");
 		} else {
+			epic.setStatus("IN_PROGRESS");
 		}
-		return "IN_PROGRESS";
 	}
 
 	public ArrayList<Task> getTaskList() {
@@ -134,14 +134,14 @@ public class TaskManager {
 		tasks.remove(id);
 	}
 
-/*	public void deleteEpic(int id) {
+	public void deleteEpic(int id) {
 		Epic epic = epics.get(id);
 		ArrayList<SubTask> list = epic.getSubTaskList();
 		for (SubTask subTask : list) {
 			subTasks.remove(subTask.getId());
 		}
 		epics.remove(id);
-	}*/
+	}
 
 	public void deleteSubTask(int id) {
 		SubTask subTask = subTasks.get(id);
@@ -152,21 +152,27 @@ public class TaskManager {
 		calculateEpicStatus(epic);
 	}
 
-	public void deleteAllTask() {
+	public void deleteAllTasks() {
 		if (!tasks.isEmpty()) {
 			tasks.clear();
 		}
 	}
 
-	public void deleteAllEpic() { //При удалении всех эпиков необходимо удалять все сабтаски.
-		if (!epics.isEmpty()) {
+	public void deleteAllEpics() {
+		if (!epics.isEmpty() && !subTasks.isEmpty()) {
+			subTasks.clear();
 			epics.clear();
 		}
 	}
 
-	public void deleteAllSubTask() { //При удалении всех сабтасков стоит пересчитать статусы всех эпиков.
-		if (!subTasks.isEmpty()) {
+	public void deleteAllSubTasks() {
+		  if (!subTasks.isEmpty()) {
 			subTasks.clear();
+			ArrayList<Epic> epicList = new ArrayList<>(epics.values());
+			for (Epic epic : epicList) {
+				epic.deleteAllSubTask();
+				calculateEpicStatus(epic);
+			}
 		}
 	}
 }

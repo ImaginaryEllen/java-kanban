@@ -1,13 +1,12 @@
 package model;
 
 public class Task {
-	protected int id; //перемення индефекатора
-	protected String name; //имя задачи
-	protected String status; //статус задачи
-	protected String description; //описание задачи
+	protected int id;
+	protected String name;
+	protected String status;
+	protected String description;
 
-	public Task(int id, String name, String status, String description) {
-		this.id = id;
+	public Task(String name, String status, String description) {
 		this.name = name;
 		this.status = status;
 		this.description = description;

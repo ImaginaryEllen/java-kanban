@@ -5,7 +5,7 @@ public class Epic extends Task {
 
 	private ArrayList<SubTask> subTaskList = new ArrayList<>(); //список подзадач
 
-	public Epic(String name,String status, String description) {
+	public Epic(String name, String description) {
 		super(name, "NEW" ,description);
 	}
 
@@ -21,8 +21,9 @@ public class Epic extends Task {
 		subTaskList.remove(subTask);
 	}
 
-	//методы удаление и поиск мб сюда добавить
-	//создай в классе эпика публичный метод, который будет удалять из списка сабтасков эпика соответствующую сабтаску,
+	public void  deleteAllSubTask() {
+		subTaskList.clear();
+	}
 
 	@Override
 	public String toString() {
