@@ -3,10 +3,10 @@ import java.util.ArrayList;
 
 public class Epic extends Task {
 
-	public ArrayList<SubTask> subTaskList = new ArrayList<>(); //список подзадач
+	private ArrayList<SubTask> subTaskList = new ArrayList<>(); //список подзадач
 
-	public Epic(int id, String name, String status, String description) {
-		super(id, name, status, description);
+	public Epic(String name,String status, String description) {
+		super(name, "NEW" ,description);
 	}
 
 	public ArrayList<SubTask> getSubTaskList() {
@@ -17,13 +17,12 @@ public class Epic extends Task {
 		subTaskList.add(subTask);
 	}
 
-	public ArrayList<SubTask> getSubTasks() {
-		return subTaskList;
+	public void deleteSubTaskByEpic(SubTask subTask) {
+		subTaskList.remove(subTask);
 	}
 
-	public void setSubTasks(ArrayList<SubTask> subTaskList) {
-		this.subTaskList = subTaskList;
-	}
+	//методы удаление и поиск мб сюда добавить
+	//создай в классе эпика публичный метод, который будет удалять из списка сабтасков эпика соответствующую сабтаску,
 
 	@Override
 	public String toString() {
