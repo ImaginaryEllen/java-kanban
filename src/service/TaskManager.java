@@ -93,7 +93,7 @@ public class TaskManager {
 			}
 		}
 		int size = subTaskList.size();
-		if (size == subTaskNewCount) {
+		if (size == subTaskNewCount || size == 0) {
 			return "NEW";
 		} else if (size == subTaskDoneCount) {
 			return "DONE";
@@ -101,7 +101,6 @@ public class TaskManager {
 		}
 		return "IN_PROGRESS";
 	}
-
 
 	public ArrayList<Task> getTaskList() {
 		if (tasks == null) {
@@ -135,20 +134,21 @@ public class TaskManager {
 		tasks.remove(id);
 	}
 
-	public void deleteEpic(int id) {
+/*	public void deleteEpic(int id) {
 		Epic epic = epics.get(id);
 		ArrayList<SubTask> list = epic.getSubTaskList();
 		for (SubTask subTask : list) {
 			subTasks.remove(subTask.getId());
 		}
 		epics.remove(id);
-	}
+	}*/
 
 	public void deleteSubTask(int id) {
 		SubTask subTask = subTasks.get(id);
 		int subTaskEpicId = subTask.getEpicId();
 		Epic epic = epics.get(subTaskEpicId);
-		epic.getSubTaskList().remove(subTask);//сделать сдесь вызов метода из эпика удаляющий сабтаску
+		epic.deleteSubTaskByEpic(subTask);
+		subTasks.remove(id);
 		calculateEpicStatus(epic);
 	}
 
