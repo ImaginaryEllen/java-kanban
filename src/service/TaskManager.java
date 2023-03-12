@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class TaskManager {
 
-	int idNumber;
+	private int idNumber;
 	private HashMap<Integer, Task> tasks;
 	private HashMap<Integer, Epic> epics;
 	private HashMap<Integer, SubTask> subTasks;
@@ -74,9 +74,14 @@ public class TaskManager {
 	public void updateSubTask(SubTask subTask) {
 		subTasks.put(subTask.getId(), subTask);
 		Epic epic = epics.get(subTask.getEpicId());
-		if (epic != null) {
-			calculateEpicStatus(epic);
+		ArrayList<SubTask> subTaskList = epic.getSubTaskList();
+		for (SubTask sub : subTaskList) {
+			if (sub.getId() == subTask.getId()) {
+				epic.deleteSubTaskByEpic(sub);
+				epic.addToSubTaskList(subTask);
+			}
 		}
+			calculateEpicStatus(epic);
 	}
 
 	private void calculateEpicStatus(Epic epic) {
