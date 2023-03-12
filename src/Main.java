@@ -13,11 +13,18 @@ public class Main {
         taskManager.createTask(new Task("Task 2", "NEW", "Description"));
 
         Epic epic = taskManager.createEpic(new Epic("Epic 1", "Description"));
-        taskManager.createEpic(new Epic("Epic 2", "Description"));
 
-        SubTask subTask = taskManager.createSubTask(new SubTask("SubTask 1", "NEW", "Description",3));
-        taskManager.createSubTask(new SubTask("SubTask 2", "IN_PROGRESS", "Description", 3));
-        taskManager.createSubTask(new SubTask("SubTask 3", "NEW", "Description", 4));
+        SubTask subTask = new SubTask("SubTask 1", "DONE", "Description", epic.getId());
+        taskManager.createSubTask(new SubTask("SubTask 2", "NEW", "Description", epic.getId()));
+        taskManager.createSubTask(subTask);
+        subTask.setStatus("IN_PROGRESS");
+        //Обновляем Подзадачу:
+        SubTask subTask1 = new SubTask(subTask.getName(), subTask.getStatus(), subTask.getDescription(), subTask.getEpicId());
+        subTask1.setId(subTask.getId());
+        subTask1.setStatus("NEW");
+        taskManager.updateSubTask(subTask1);
+        System.out.println("Вывод состояния Эпика после обновлений и добавлений Подзадач:");
+        System.out.println(taskManager.getEpic(epic.getId()));
 
         System.out.println("Получение списка Task: " + taskManager.getTaskList());
         System.out.println("Получение списка Epic: " + taskManager.getEpicList());
@@ -39,10 +46,6 @@ public class Main {
         epicFromManager.setDescription("NewDescription");
         taskManager.updateEpic(epicFromManager);
         System.out.println("Обновили Epic: " + epicFromManager);
-
-        subTaskFromManager.setStatus("DONE");
-        taskManager.updateSubTask(subTaskFromManager);
-        System.out.println("Обновили SubTask: " + subTaskFromManager);
 
         taskManager.deleteTask(taskFromManager.getId());
         System.out.println("Удаляем по ID Task: " + taskFromManager);
