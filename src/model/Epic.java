@@ -1,15 +1,16 @@
 package model;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
 
-	private ArrayList<SubTask> subTaskList = new ArrayList<>(); //список подзадач
+	private List<SubTask> subTaskList = new ArrayList<>(); //список подзадач
 
 	public Epic(String name, String description) {
-		super(name, "NEW" ,description);
+		super(name, Status.NEW ,description);
 	}
 
-	public ArrayList<SubTask> getSubTaskList() {
+	public List<SubTask> getSubTaskList() {
 		return subTaskList;
 	}
 
@@ -29,10 +30,10 @@ public class Epic extends Task {
 	public String toString() {
 		return "Epic{" +
 				"subTaskList=" + subTaskList +
-				", id=" + id +
-				", name='" + name + '\'' +
-				", status='" + status + '\'' +
-				", description='" + description + '\'' +
+				", id=" + getId() +
+				", name='" + getName() + '\'' +
+				", status='" + getStatus() + '\'' +
+				", description='" + getDescription() + '\'' +
 				'}';
 	}
 }
