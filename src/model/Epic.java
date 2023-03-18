@@ -4,10 +4,10 @@ import java.util.List;
 
 public class Epic extends Task {
 
-	private List<SubTask> subTaskList = new ArrayList<>(); //список подзадач
+	private final List<SubTask> subTaskList = new ArrayList<>(); //список подзадач
 
 	public Epic(String name, String description) {
-		super(name, Status.NEW ,description);
+		super(name, Status.NEW, description);
 	}
 
 	public List<SubTask> getSubTaskList() {
