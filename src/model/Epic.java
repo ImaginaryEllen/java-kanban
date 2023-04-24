@@ -4,10 +4,19 @@ import java.util.List;
 
 public class Epic extends Task {
 
-	private final List<SubTask> subTaskList = new ArrayList<>(); //список подзадач
+	private final List<SubTask> subTaskList = new ArrayList<>();
 
 	public Epic(String name, String description) {
 		super(name, Status.NEW, description);
+	}
+
+	public Epic(int id, String name, Status status, String description) {
+		super(id, name, status, description);
+	}
+
+	@Override
+	public TaskType getType() {
+		return TaskType.EPIC;
 	}
 
 	public List<SubTask> getSubTaskList() {
