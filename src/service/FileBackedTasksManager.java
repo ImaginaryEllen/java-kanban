@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 private final File file;
@@ -150,19 +149,19 @@ private final File file;
 		save();
 	}
 
-	public static String historyToString(HistoryManager manager) {
+	private static String historyToString(HistoryManager manager) {
 		StringBuilder ids = new StringBuilder();
 		for (Task task : manager.getHistory()) {
 			ids.append(",").append(task.getId());
 
 		}
 		if (!ids.toString().isEmpty()) {
-			ids.deleteCharAt(0);
+			ids.deleteCharAt(0); // для формата записи: ,1,2,3 -> 1,2,3
 		}
 		return ids.toString();
 	}
 
-	public static List<Integer> historyFromString(String value) {
+	private static List<Integer> historyFromString(String value) {
 		final String[] ids = value.split(",");
 		List<Integer> idFromHistory = new ArrayList<>();
 		for (String id : ids) {
@@ -193,19 +192,17 @@ private final File file;
 						break;
 					case SUBTASK:
 						fileManager.getSubTasks().put(task.getId(), (SubTask) task);
+						if (!fileManager.getEpics().isEmpty()) {
+							for (Epic epic : fileManager.getEpicList()) {
+								if (epic.getId() == ((SubTask) task).getEpicId()) {
+									epic.addToSubTaskList((SubTask) task);
+								}
+							}
+						}
 						break;
 				}
 				if (max < task.getId()) {
 					max = task.getId();
-				}
-			}
-			if (!fileManager.getSubTasks().isEmpty() && !fileManager.getEpics().isEmpty()) {
-				for (SubTask subTask : fileManager.getSubTaskList()) {
-					for (Epic epic : fileManager.getEpicList()) {
-						if (epic.getId() == subTask.getEpicId()) {
-							epic.addToSubTaskList(subTask);
-						}
-					}
 				}
 			}
 			fileManager.setIdNumber(max);
@@ -213,11 +210,11 @@ private final File file;
 			final List<Integer> idFromHistory = historyFromString(line);
 			for (Integer id : idFromHistory) {
 				if (fileManager.getTasks().containsKey(id)) {
-					fileManager.getTask(id);
+					fileManager.getHistoryManager().add(fileManager.getTasks().get(id));
 				} else if (fileManager.getEpics().containsKey(id)) {
-					fileManager.getEpic(id);
+					fileManager.getHistoryManager().add(fileManager.getEpics().get(id));
 				} else {
-					fileManager.getSubTask(id);
+					fileManager.getHistoryManager().add(fileManager.getSubTasks().get(id));
 				}
 			}
 		} catch (IOException e) {
@@ -230,16 +227,16 @@ private final File file;
 		try(final BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
 			writer.append("id,type,name,status,description,epicID");
 			writer.newLine();
-			for (Map.Entry<Integer, Task> entry : getTasks().entrySet()) {
-				writer.append(toString(entry.getValue()));
+			for (Task task : getTasks().values()) {
+				writer.append(toString(task));
 				writer.newLine();
 			}
-			for (Map.Entry<Integer, Epic> entry : getEpics().entrySet()) {
-				writer.append(toString(entry.getValue()));
+			for (Epic epic : getEpics().values()) {
+				writer.append(toString(epic));
 				writer.newLine();
 			}
-			for (Map.Entry<Integer, SubTask> entry : getSubTasks().entrySet()) {
-				writer.append(toString(entry.getValue()));
+			for (SubTask subTask : getSubTasks().values()) {
+				writer.append(toString(subTask));
 				writer.newLine();
 			}
 			writer.newLine();
@@ -251,7 +248,7 @@ private final File file;
 		}
 	}
 
-	public static String toString(Task task) {
+	private static String toString(Task task) {
 		if (task.getType().equals(TaskType.SUBTASK)) {
 			SubTask subTask = (SubTask) task;
 			return task.getId() + "," + task.getType() + "," + task.getName() + ","
@@ -261,7 +258,7 @@ private final File file;
 				+ task.getStatus() + "," + task.getDescription();
 	}
 
-	public static Task fromString(String value) {
+	private static Task fromString(String value) {
 		String[] arrayTask = value.split(",");
 		Task task = null;
 		TaskType type = TaskType.valueOf(arrayTask[1]);
