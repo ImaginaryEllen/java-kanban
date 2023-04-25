@@ -152,11 +152,7 @@ private final File file;
 	private static String historyToString(HistoryManager manager) {
 		StringBuilder ids = new StringBuilder();
 		for (Task task : manager.getHistory()) {
-			ids.append(",").append(task.getId());
-
-		}
-		if (!ids.toString().isEmpty()) {
-			ids.deleteCharAt(0); // для формата записи: ,1,2,3 -> 1,2,3
+			ids.append(task.getId()).append(",");
 		}
 		return ids.toString();
 	}
@@ -192,12 +188,8 @@ private final File file;
 						break;
 					case SUBTASK:
 						fileManager.getSubTasks().put(task.getId(), (SubTask) task);
-						if (!fileManager.getEpics().isEmpty()) {
-							for (Epic epic : fileManager.getEpicList()) {
-								if (epic.getId() == ((SubTask) task).getEpicId()) {
-									epic.addToSubTaskList((SubTask) task);
-								}
-							}
+						if (fileManager.getEpics().get(((SubTask) task).getEpicId()) != null) {
+							fileManager.getEpics().get(((SubTask) task).getEpicId()).addToSubTaskList((SubTask) task);
 						}
 						break;
 				}
