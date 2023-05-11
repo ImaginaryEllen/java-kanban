@@ -1,14 +1,16 @@
 package service;
 
 import model.*;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-private final File file;
+	private final File file;
 
 	public FileBackedTasksManager(HistoryManager historyManager, File file) {
 		super(historyManager);
@@ -18,14 +20,14 @@ private final File file;
 	public static void main(String[] args) {
 		TaskManager taskManager = new FileBackedTasksManager(
 				Managers.getDefaultHistoryManager(), new File("repository/task.csv"));
-		taskManager.createTask(new Task("Task", Status.NEW, "Description"));
+		Task task = taskManager.createTask(new Task(
+				"Task", Status.NEW, "Description", Instant.now(), 15));
 		Epic epic = taskManager.createEpic(new Epic("Epic", "Description"));
-		taskManager.createSubTask(new SubTask("SubTask 1", Status.NEW, "Description", epic.getId()));
+		taskManager.createSubTask(new SubTask(
+				"SubTask 1", Status.NEW, "Description", task.getEndTime(), 10, epic.getId()));
 		taskManager.getTask(1);
 		taskManager.getEpic(2);
 		taskManager.getSubTask(3);
-		taskManager.createSubTask(new SubTask("SubTask 2", Status.NEW, "Description", epic.getId()));
-		taskManager.getSubTask(4);
 		TaskManager fileManager = FileBackedTasksManager.loadFromFile(new File("repository/task.csv"));
 		System.out.println(fileManager.getTaskList());
 		System.out.println(fileManager.getEpicList());
@@ -114,6 +116,34 @@ private final File file;
 	}
 
 	@Override
+	public List<Task> getTaskList() {
+		List<Task> tasks = super.getTaskList();
+		save();
+		return tasks;
+	}
+
+	@Override
+	public List<Epic> getEpicList() {
+		List<Epic> epics = super.getEpicList();
+		save();
+		return epics;
+	}
+
+	@Override
+	public List<SubTask> getSubTaskList() {
+		List<SubTask> subTasks = super.getSubTaskList();
+		save();
+		return subTasks;
+	}
+
+	@Override
+	public List<SubTask> getSubTasksByEpic(Epic epic) {
+		List<SubTask> subTasksByEpic = super.getSubTasksByEpic(epic);
+		save();
+		return subTasksByEpic;
+	}
+
+	@Override
 	public void deleteTask(int id) {
 		super.deleteTask(id);
 		save();
@@ -149,6 +179,13 @@ private final File file;
 		save();
 	}
 
+	@Override
+	public List<Task> getHistory() {
+		List<Task> history = super.getHistory();
+		save();
+		return history;
+	}
+
 	private static String historyToString(HistoryManager manager) {
 		StringBuilder ids = new StringBuilder();
 		for (Task task : manager.getHistory()) {
@@ -168,7 +205,7 @@ private final File file;
 
 	public static FileBackedTasksManager loadFromFile(File file) {
 		int max = 0;
-		FileBackedTasksManager fileManager = new FileBackedTasksManager(Managers.getDefaultHistoryManager(),file);
+		FileBackedTasksManager fileManager = new FileBackedTasksManager(Managers.getDefaultHistoryManager(), file);
 		try (final BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
 			reader.readLine();
 			while (true) {
@@ -209,15 +246,17 @@ private final File file;
 					fileManager.getHistoryManager().add(fileManager.getSubTasks().get(id));
 				}
 			}
-		} catch (IOException e) {
-			throw new ManagerException("Error reading from file", e);
+		} catch (IOException exception) {
+			throw new ManagerException("Error reading from file");
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Error reading empty file");
 		}
 		return fileManager;
 	}
 
 	private void save() {
-		try(final BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-			writer.append("id,type,name,status,description,epicID");
+		try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
+			writer.append("id,type,name,status,description,start,duration,epicID");
 			writer.newLine();
 			for (Task task : getTasks().values()) {
 				writer.append(toString(task));
@@ -236,7 +275,7 @@ private final File file;
 			writer.newLine();
 
 		} catch (IOException e) {
-			throw new ManagerException("Error writing to file", e);
+			throw new ManagerException("Error writing to file");
 		}
 	}
 
@@ -244,10 +283,11 @@ private final File file;
 		if (task.getType().equals(TaskType.SUBTASK)) {
 			SubTask subTask = (SubTask) task;
 			return task.getId() + "," + task.getType() + "," + task.getName() + ","
-					+ task.getStatus() + "," + task.getDescription() + "," + subTask.getEpicId();
+					+ task.getStatus() + "," + task.getDescription()
+					+ "," + task.getStartTime() + "," + task.getDuration() + "," + subTask.getEpicId();
 		}
 		return task.getId() + "," + task.getType() + "," + task.getName() + ","
-				+ task.getStatus() + "," + task.getDescription();
+				+ task.getStatus() + "," + task.getDescription() + "," + task.getStartTime() + "," + task.getDuration();
 	}
 
 	private static Task fromString(String value) {
@@ -257,15 +297,25 @@ private final File file;
 		switch (type) {
 			case TASK:
 				task = new Task(Integer.parseInt(arrayTask[0]), arrayTask[2],
-						Status.valueOf(arrayTask[3]), arrayTask[4]);
+						Status.valueOf(arrayTask[3]), arrayTask[4],
+						Instant.parse(arrayTask[5]), Integer.parseInt(arrayTask[6]));
 				break;
 			case EPIC:
-				task = new Epic(Integer.parseInt(arrayTask[0]), arrayTask[2],
-						Status.valueOf(arrayTask[3]),  arrayTask[4]);
+				task = new Epic(arrayTask[2], arrayTask[4]);
+				task.setId(Integer.parseInt(arrayTask[0]));
+				task.setStatus(Status.valueOf(arrayTask[3]));
+				if (arrayTask[5].equals("null") && Integer.parseInt(arrayTask[6]) == 0) {
+					task.setStartTime(null);
+					task.setDuration(0);
+					break;
+				}
+				task.setStartTime(Instant.parse(arrayTask[5]));
+				task.setDuration(Integer.parseInt(arrayTask[6]));
 				break;
 			case SUBTASK:
 				task = new SubTask(Integer.parseInt(arrayTask[0]), arrayTask[2],
-						Status.valueOf(arrayTask[3]), arrayTask[4], Integer.parseInt(arrayTask[5]));
+						Status.valueOf(arrayTask[3]), arrayTask[4],
+						Instant.parse(arrayTask[5]), Integer.parseInt(arrayTask[6]), Integer.parseInt(arrayTask[7]));
 				break;
 			default:
 				break;

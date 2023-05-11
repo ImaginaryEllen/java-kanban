@@ -1,7 +1,6 @@
-id,type,name,status,description,epicID
-1,TASK,Task,NEW,Description
-2,EPIC,Epic,NEW,Description
-3,SUBTASK,SubTask 1,NEW,Description,2
-4,SUBTASK,SubTask 2,NEW,Description,2
+id,type,name,status,description,start,duration,epicID
+1,TASK,TestTask,NEW,TestDescription,2023-05-11T20:45:38.311242200Z,15
+2,EPIC,TestEpic,NEW,TestDescription,2023-05-11T21:00:38.311242200Z,30
+3,SUBTASK,TestSubTask,NEW,TestDescription,2023-05-11T21:00:38.311242200Z,30,2
 
-1,2,3,4
+1,2,3,

@@ -3,9 +3,18 @@ package service;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
+
+	void addToPrioritizedTasks(Task task);
+
+	void addToPrioritizedSubTasks(SubTask subTask);
+
+	TreeSet<Task> getPrioritizedTasks();
+
 	Task createTask(Task task);
 
 	Epic createEpic(Epic epic);
