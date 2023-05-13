@@ -31,12 +31,16 @@ public class Epic extends Task {
 
 	public void getEpicTime() {
 		int sum = 0;
+		startTime = null;
+		endTime = null;
 		for (SubTask subTask : subTaskList) {
 			if (subTask.getStartTime() != null && subTask.getDuration() != 0) {
 				sum += subTask.getDuration();
-				if (subTaskList.size() == 1) {
+				if (startTime == null && endTime == null) {
 					endTime = subTask.getEndTime();
 					startTime = subTask.getStartTime();
+				}
+				if (subTaskList.size() == 1) {
 					break;
 				}
 				if (subTask.getEndTime().isAfter(endTime)) {
