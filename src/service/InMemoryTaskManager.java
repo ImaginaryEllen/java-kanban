@@ -89,7 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
 	private boolean checkOverlap(Task task) {
 		for (Task taskPriority : prioritizedTasks) {
 			if (taskPriority.getStartTime().equals(task.getStartTime())
-					|| taskPriority.getEndTime().equals(task.getEndTime())) {
+					&& taskPriority.getEndTime().equals(task.getEndTime())) {
 				throw new ManagerException("Error: tasks overlap in time");
 			}
 		}
@@ -129,39 +129,37 @@ public class InMemoryTaskManager implements TaskManager {
 	@Override
 	public void updateTask(Task task) {
 		final Task saved = tasks.get(task.getId());
-		saved.setName(task.getName());
-		saved.setDescription(task.getDescription());
-		saved.setStatus(task.getStatus());
-		deleteFromPrioritizedTasks(task);
-		if (checkOverlap(task)) {
-			addToPrioritizedTasks(task);
+		if (saved != null) {
+			deleteFromPrioritizedTasks(saved);
+			if (checkOverlap(task)) {
+				addToPrioritizedTasks(task);
+			}
+			tasks.put(task.getId(), task);
 		}
-		tasks.put(task.getId(), task);
 	}
 
 	@Override
 	public void updateEpic(Epic epic) {
-		final Epic saved = epics.get(epic.getId());
-		saved.setName(epic.getName());
-		saved.setDescription(epic.getDescription());
-		calculateEpicStatus(epic);
-		epics.put(epic.getId(), epic);
+		Epic saved = epics.get(epic.getId());
+		if (saved != null) {
+			saved.setName(epic.getName());
+			saved.setDescription(epic.getDescription());
+		}
 	}
 
 	@Override
 	public void updateSubTask(SubTask subTask) {
 		final SubTask saved = subTasks.get(subTask.getId());
-		saved.setName(subTask.getName());
-		saved.setDescription(subTask.getDescription());
-		saved.setStatus(subTask.getStatus());
-		deleteFromPrioritizedTasks(subTask);
-		if (checkOverlap(subTask)) {
-			addToPrioritizedTasks(subTask);
+		if (saved != null && subTask.getEpicId() == saved.getEpicId()) {
+			deleteFromPrioritizedTasks(saved);
+			if (checkOverlap(subTask)) {
+				addToPrioritizedTasks(subTask);
+			}
+			subTasks.put(subTask.getId(), subTask);
+			final Epic epic = epics.get(subTask.getEpicId());
+			epic.getEpicTime();
+			calculateEpicStatus(epic);
 		}
-		subTasks.put(subTask.getId(), subTask);
-		final Epic epic = epics.get(subTask.getEpicId());
-		epic.getEpicTime();
-		calculateEpicStatus(epic);
 	}
 
 	private void calculateEpicStatus(Epic epic) {
