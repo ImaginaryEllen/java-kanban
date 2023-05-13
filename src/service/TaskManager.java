@@ -9,10 +9,6 @@ import java.util.TreeSet;
 
 public interface TaskManager {
 
-	void addToPrioritizedTasks(Task task);
-
-	void addToPrioritizedSubTasks(SubTask subTask);
-
 	TreeSet<Task> getPrioritizedTasks();
 
 	Task createTask(Task task);
