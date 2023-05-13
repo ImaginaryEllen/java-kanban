@@ -22,8 +22,8 @@ class SubTaskTest {
 
 		int epicId = epic.getId();
 		TaskType type = subTask.getType();
-		Instant start = Instant.now();
-		Instant end = start.plusMillis(15 * 60000);
+		Instant start = subTask.getStartTime();
+		Instant end = start.plusMillis(15 * 60000L);
 
 		assertEquals(epicId, subTask.getEpicId(), "Incorrect epic ID for subTask");
 		assertEquals(TaskType.SUBTASK, type, "Incorrect type for subTask");
