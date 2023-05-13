@@ -12,7 +12,7 @@ import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest extends TaskManagerTest <InMemoryTaskManager> {
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
 	@BeforeEach
 	@Override
@@ -25,11 +25,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest <InMemoryTaskManager> {
 		Task task = taskManager.createTask(new Task(
 				"TestTask", Status.NEW, "TestDescription", Instant.now(), 20));
 		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
-		SubTask subTask = taskManager.createSubTask(new SubTask("TestSubTask",
+		taskManager.createSubTask(new SubTask("TestSubTask",
 				Status.NEW, "TestDescription", task.getEndTime(), 40, epic.getId()));
-
-		taskManager.addToPrioritizedTasks(task);
-		taskManager.addToPrioritizedSubTasks(subTask);
 
 		final TreeSet<Task> tasks = taskManager.getPrioritizedTasks();
 		assertEquals(2, tasks.size(), "Incorrect size prioritized tasks");
