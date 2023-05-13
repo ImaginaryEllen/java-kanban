@@ -19,8 +19,8 @@ class TaskTest {
 				"TestTask", Status.NEW, "TestDescription", Instant.now(), 30));
 
 		TaskType type = task.getType();
-		Instant start = Instant.now();
-		Instant end = start.plusMillis(30 * 60000);
+		Instant start = task.getStartTime();
+		Instant end = start.plusMillis(30 * 60000L);
 
 		assertEquals(TaskType.TASK, type, "Incorrect type for task");
 		assertEquals(start, task.getStartTime(), "Incorrect start for task");
