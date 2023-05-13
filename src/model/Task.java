@@ -9,7 +9,6 @@ public class Task {
 	private String description;
 	private int duration;
 	private Instant startTime;
-	private Instant endTime;
 
 	//конструктор для старых задач
 	public Task(String name, Status status, String description) {
@@ -47,9 +46,6 @@ public class Task {
 		return duration;
 	}
 
-	public void setEndTime(Instant endTime) {
-		this.endTime = endTime;
-	}
 
 	public Instant getStartTime() {
 		return startTime;
@@ -64,8 +60,11 @@ public class Task {
 	}
 
 	public Instant getEndTime() {
-		int durationMilli = duration * 60000;
-		endTime = startTime.plusMillis(durationMilli);
+		Instant endTime = null;
+		startTime = getStartTime();
+		if (startTime != null && duration != 0) {
+			endTime = startTime.plusMillis(duration * 60000L);
+		}
 		return endTime;
 	}
 
