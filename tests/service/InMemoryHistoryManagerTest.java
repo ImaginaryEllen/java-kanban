@@ -22,12 +22,12 @@ class InMemoryHistoryManagerTest {
 	void beforeEach() {
 		historyManager = new InMemoryHistoryManager();
 		taskManager = new InMemoryTaskManager(historyManager);
-		task1 = taskManager.createTask(
-				new Task("TestTask 1", NEW, "TestDescription", Instant.now(), 45));
-		task2 = taskManager.createTask(
-				new Task("TestTask 2", NEW, "TestDescription", task1.getEndTime(), 20));
-		task3 = taskManager.createTask(
-				new Task("TestTask 3", NEW, "TestDescription", task2.getEndTime(), 35));
+		task1 = taskManager.createTask(new Task(
+				"TestTask 1", NEW, "TestDescription", Instant.now(), 45));
+		task2 = taskManager.createTask(new Task("TestTask 2",
+				NEW, "TestDescription", task1.getEndTime().plusMillis(100000), 20));
+		task3 = taskManager.createTask(new Task("TestTask 3",
+				NEW, "TestDescription", task2.getEndTime().plusMillis(200000), 35));
 	}
 
 	@Test
