@@ -27,8 +27,8 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 				"TestTask", NEW, "TestDescription", Instant.now(), 15));
 		Epic epic = taskManager.createEpic(new Epic(
 				"TestEpic", "TestDescription"));
-		SubTask subTask = taskManager.createSubTask(new SubTask(
-				"TestSubTask", NEW, "TestDescription", task.getEndTime(), 30, epic.getId()));
+		SubTask subTask = taskManager.createSubTask(new SubTask("TestSubTask", NEW, "TestDescription",
+				task.getEndTime().plusMillis(100000), 30, epic.getId()));
 		taskManager.getHistoryManager().add(task);
 		taskManager.getHistoryManager().add(epic);
 		taskManager.getHistoryManager().add(subTask);
