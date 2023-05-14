@@ -17,7 +17,9 @@ public class Main {
 				"Task 1", Status.NEW, "Description", Instant.now(), 10));
 		Epic epic = taskManager.createEpic(new Epic("Epic 1", "Description"));
 		taskManager.createSubTask(new SubTask(
-				"SubTask 1", Status.NEW, "Description", task.getEndTime(), 15, epic.getId()));
+				"SubTask 1", Status.NEW, "Description",
+				task.getEndTime().plusMillis(100000), 15, epic.getId()));
+
 		System.out.println("История после создания задач: " + taskManager.getHistory());
 
 		taskManager.getTask(1);
