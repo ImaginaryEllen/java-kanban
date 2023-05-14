@@ -24,7 +24,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 				"Task", Status.NEW, "Description", Instant.now(), 15));
 		Epic epic = taskManager.createEpic(new Epic("Epic", "Description"));
 		taskManager.createSubTask(new SubTask(
-				"SubTask 1", Status.NEW, "Description", task.getEndTime(), 10, epic.getId()));
+				"SubTask 1", Status.NEW, "Description",
+				task.getEndTime().plusMillis(100000), 10, epic.getId()));
 		taskManager.getTask(1);
 		taskManager.getEpic(2);
 		taskManager.getSubTask(3);
