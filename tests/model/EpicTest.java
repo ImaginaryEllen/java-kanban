@@ -19,8 +19,9 @@ class EpicTest {
 		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
 		SubTask subTask1 = manager.createSubTask(new SubTask(
 				"TestSubTask", NEW, "TestDescription", Instant.now(), 10, epic.getId()));
-		SubTask subTask2 = manager.createSubTask(new SubTask("TestSubTask",
-				Status.NEW, "TestDescription", subTask1.getEndTime(), 20, epic.getId()));
+		SubTask subTask2 = manager.createSubTask(new SubTask(
+				"TestSubTask", Status.NEW, "TestDescription",
+				subTask1.getEndTime().plusMillis(100000), 20, epic.getId()));
 
 		int epicDuration = subTask1.getDuration() + subTask2.getDuration();
 		Instant epicStart = subTask1.getStartTime();
