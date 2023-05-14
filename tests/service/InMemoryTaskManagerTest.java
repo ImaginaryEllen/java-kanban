@@ -25,8 +25,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 		Task task = taskManager.createTask(new Task(
 				"TestTask", Status.NEW, "TestDescription", Instant.now(), 20));
 		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
-		taskManager.createSubTask(new SubTask("TestSubTask",
-				Status.NEW, "TestDescription", task.getEndTime(), 40, epic.getId()));
+		taskManager.createSubTask(new SubTask("TestSubTask", Status.NEW,
+				"TestDescription", task.getEndTime().plusMillis(100000), 40, epic.getId()));
 
 		final TreeSet<Task> tasks = taskManager.getPrioritizedTasks();
 		assertEquals(2, tasks.size(), "Incorrect size prioritized tasks");
