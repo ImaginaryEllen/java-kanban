@@ -100,7 +100,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 		Task task1 = manager.createTask(
 				new Task("TestTask 1", NEW, "TestDescription", Instant.now(), 15));
 		manager.createTask(
-				new Task("TestTask 2", NEW, "TestDescription", task1.getEndTime(), 40));
+				new Task("TestTask 2", NEW,
+						"TestDescription", task1.getEndTime().plusMillis(100000), 40));
 
 		manager.deleteTask(task1.getId());
 		final List<Task> tasks = manager.getTaskList();
@@ -134,8 +135,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
 		SubTask subTask1 = manager.createSubTask(new SubTask(
 				"TestSubTask 1", NEW, "TestDescription", Instant.now(), 45, epic.getId()));
-		manager.createSubTask(new SubTask(
-				"TestSubTask 1", NEW, "TestDescription", subTask1.getEndTime(), 30, epic.getId()));
+		manager.createSubTask(new SubTask("TestSubTask 1", NEW, "TestDescription",
+				subTask1.getEndTime().plusMillis(100000), 30, epic.getId()));
 
 		manager.deleteSubTask(subTask1.getId());
 		final List<SubTask> subTasks = manager.getSubTaskList();
@@ -155,8 +156,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 		assertEquals(Status.NEW, epic.getStatus(), "Incorrect status for new epic");
 		SubTask subTask1 = manager.createSubTask(new SubTask("TestSubTask",
 				Status.NEW, "TestDescription", Instant.now(), 15, epic.getId()));
-		SubTask subTask2 = manager.createSubTask(new SubTask("TestSubTask",
-				Status.NEW, "TestDescription", subTask1.getEndTime(), 25, epic.getId()));
+		SubTask subTask2 = manager.createSubTask(new SubTask(
+				"TestSubTask", Status.NEW, "TestDescription",
+				subTask1.getEndTime().plusMillis(100000), 25, epic.getId()));
 		assertEquals(Status.NEW, epic.getStatus(), "Incorrect status for new epic");
 
 		subTask2.setStatus(Status.DONE);
