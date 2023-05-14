@@ -87,13 +87,16 @@ public class InMemoryTaskManager implements TaskManager {
 	}
 
 	private boolean checkOverlap(Task task) {
+		if (prioritizedTasks.isEmpty()) {
+			return true;
+		}
 		for (Task taskPriority : prioritizedTasks) {
-			if (taskPriority.getStartTime().equals(task.getStartTime())
-					&& taskPriority.getEndTime().equals(task.getEndTime())) {
-				throw new ManagerException("Error: tasks overlap in time");
+			if (taskPriority.getEndTime().isBefore(task.getStartTime())
+					|| taskPriority.getStartTime().isAfter(task.getEndTime())) {
+				return true;
 			}
 		}
-		return true;
+		throw new ManagerException("Error: tasks overlap in time");
 	}
 
 	@Override
