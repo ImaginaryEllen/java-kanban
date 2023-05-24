@@ -7,8 +7,8 @@ public class Task {
 	private String name;
 	private Status status;
 	private String description;
-	private int duration;
 	private Instant startTime;
+	private int duration;
 
 	//конструктор для старых задач
 	public Task(String name, Status status, String description) {
@@ -36,6 +36,13 @@ public class Task {
 		this.description = description;
 		this.startTime = startTime;
 		this.duration = duration;
+	}
+
+	public Task(int id, String name, Status status, String description) {
+		this.id = id;
+		this.name = name;
+		this.status = status;
+		this.description = description;
 	}
 
 	public TaskType getType() {
@@ -104,9 +111,11 @@ public class Task {
 	public String toString() {
 		return "Task{" +
 				"id=" + id +
-				", " + name + '\'' +
-				", " + status + '\'' +
-				", " + description + '\'' +
+				", " + name +
+				", " + status +
+				", " + description +
+				", " + startTime +
+				", " + duration +
 				'}';
 	}
 }

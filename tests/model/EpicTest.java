@@ -5,6 +5,7 @@ import service.InMemoryHistoryManager;
 import service.InMemoryTaskManager;
 import service.TaskManager;
 
+import java.io.IOException;
 import java.time.Instant;
 
 import static model.Status.NEW;
@@ -15,7 +16,7 @@ class EpicTest {
 	TaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
 
 	@Test
-	void shouldReturnCorrectTimeAndTypeForEpic() {
+	void shouldReturnCorrectTimeAndTypeForEpic() throws IOException {
 		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
 		SubTask subTask1 = manager.createSubTask(new SubTask(
 				"TestSubTask", NEW, "TestDescription", Instant.now(), 10, epic.getId()));

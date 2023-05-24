@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -15,14 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 	@BeforeEach
-	@Override
-	void init() {
+	protected void beforeEach() {
 		taskManager = new FileBackedTasksManager(Managers.getDefaultHistoryManager(),
 				new File("repository/task.csv"));
 	}
 
 	@Test
-	void shouldSaveInAndLoadOutFileTasks() {
+	void shouldSaveInAndLoadOutFileTasks() throws IOException {
 		Task task = taskManager.createTask(new Task(
 				"TestTask", NEW, "TestDescription", Instant.now(), 15));
 		Epic epic = taskManager.createEpic(new Epic(
@@ -57,7 +57,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 	}
 
 	@Test
-	void shouldReturnExceptionWhenTaskAndHistoryIsEmpty() {
+	void shouldReturnExceptionWhenTaskAndHistoryIsEmpty() throws IOException {
 		final List<Task> tasks = taskManager.getTaskList();
 		final List<Epic> epics = taskManager.getEpicList();
 		final List<SubTask> subTasks = taskManager.getSubTaskList();
@@ -76,11 +76,11 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 	}
 
 	@Test
-	void shouldReturnExceptionWhenEpicWithoutSubtasks() {
+	void shouldReturnExceptionWhenEpicWithoutSubtasks() throws IOException {
 		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
 
 		final List<Epic> epics = taskManager.getEpicList();
-		final List<SubTask> subTasksByEpic = taskManager.getSubTasksByEpic(epic);
+		final List<SubTask> subTasksByEpic = taskManager.getSubTasksByEpic(epic.getId());
 		assertEquals(0, subTasksByEpic.size(), "SubTasks by epic should be empty");
 		assertEquals(1, epics.size(), "Epics should be not empty");
 

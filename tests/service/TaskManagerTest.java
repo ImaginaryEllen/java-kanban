@@ -4,9 +4,9 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -17,30 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class TaskManagerTest<T extends TaskManager> {
 	protected T taskManager;
 
-	abstract void init();
-
-	TaskManager manager;
-
-	@BeforeEach
-	void beforeEach() {
-		manager = Managers.getDefaultTaskManager();
-	}
-
 	@Test
-	void shouldCreateNewTask() {
-		Task task = manager.createTask(
+	void shouldCreateNewTask() throws IOException {
+		Task task = taskManager.createTask(
 				new Task("TestTask", NEW, "TestDescription", Instant.now(), 15));
 		final int taskId = task.getId();
-		final Task savedTask = manager.getTask(taskId);
+		final Task savedTask = taskManager.getTaskById(taskId);
 
 		assertNotNull(savedTask, "Task not found");
 		assertEquals(task, savedTask, "Tasks not equals");
 
 		task.setName("New name");
-		manager.updateTask(task);
+		taskManager.updateTask(task);
 		assertEquals("New name", task.getName(), "Tasks not update");
 
-		final List<Task> tasks = manager.getTaskList();
+		final List<Task> tasks = taskManager.getTaskList();
 
 		assertNotNull(tasks, "Tasks not found");
 		assertEquals(1, tasks.size(), "Not correct quantity tasks");
@@ -48,20 +39,20 @@ abstract class TaskManagerTest<T extends TaskManager> {
 	}
 
 	@Test
-	void shouldCreateNewEpic() {
-		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
+	void shouldCreateNewEpic() throws IOException {
+		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
 		final int epicId = epic.getId();
-		final Epic savedEpic = manager.getEpic(epicId);
+		final Epic savedEpic = taskManager.getEpicById(epicId);
 
 		assertNotNull(savedEpic, "Epic not found");
 		assertEquals(epic, savedEpic, "Epic not found by ID");
 
 		epic.setName("New name");
-		manager.updateEpic(epic);
+		taskManager.updateEpic(epic);
 		assertEquals("New name", epic.getName(), "SubTasks not update");
 
-		final List<Epic> epics = manager.getEpicList();
-		final List<SubTask> subTasksByEpic = manager.getSubTasksByEpic(epic);
+		final List<Epic> epics = taskManager.getEpicList();
+		final List<SubTask> subTasksByEpic = taskManager.getSubTasksByEpic(epic.getId());
 
 		assertNotNull(subTasksByEpic, "Epics not found");
 		assertNotNull(epics, "Epics not found");
@@ -71,22 +62,22 @@ abstract class TaskManagerTest<T extends TaskManager> {
 	}
 
 	@Test
-	void shouldCreateNewSubTask() {
-		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
-		SubTask subTask = manager.createSubTask(new SubTask(
+	void shouldCreateNewSubTask() throws IOException {
+		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
+		SubTask subTask = taskManager.createSubTask(new SubTask(
 				"TestSubTask", NEW, "TestDescription", Instant.now(), 30, epic.getId()));
 		final int subTaskId = subTask.getId();
-		final SubTask savedSubTask = manager.getSubTask(subTaskId);
+		final SubTask savedSubTask = taskManager.getSubTaskById(subTaskId);
 
 		assertNotNull(savedSubTask, "SubTask not found");
 		assertEquals(subTask, savedSubTask, "SubTask not found by ID");
 
 		subTask.setStatus(IN_PROGRESS);
-		manager.updateSubTask(subTask);
+		taskManager.updateSubTask(subTask);
 		assertEquals(IN_PROGRESS, subTask.getStatus(), "SubTasks not update");
 		assertEquals(IN_PROGRESS, epic.getStatus(), "Epic status not update");
 
-		final List<SubTask> subTasks = manager.getSubTaskList();
+		final List<SubTask> subTasks = taskManager.getSubTaskList();
 		Integer epicId = subTask.getEpicId();
 
 		assertNotNull(subTasks, "SubTasks not found");
@@ -96,85 +87,85 @@ abstract class TaskManagerTest<T extends TaskManager> {
 	}
 
 	@Test
-	void shouldDeleteTasks() {
-		Task task1 = manager.createTask(
+	void shouldDeleteTasks() throws IOException {
+		Task task1 = taskManager.createTask(
 				new Task("TestTask 1", NEW, "TestDescription", Instant.now(), 15));
-		manager.createTask(
+		taskManager.createTask(
 				new Task("TestTask 2", NEW,
 						"TestDescription", task1.getEndTime().plusMillis(100000), 40));
 
-		manager.deleteTask(task1.getId());
-		final List<Task> tasks = manager.getTaskList();
+		taskManager.deleteTask(task1.getId());
+		final List<Task> tasks = taskManager.getTaskList();
 		assertEquals(1, tasks.size(), "Not correct delete task");
 
-		manager.deleteAllTasks();
-		final List<Task> task = manager.getTaskList();
+		taskManager.deleteAllTasks();
+		final List<Task> task = taskManager.getTaskList();
 		assertEquals(0, task.size(), "Not correct delete tasks");
 	}
 
 	@Test
-	void shouldDeleteEpics() {
-		Epic epic1 = manager.createEpic(new Epic("TestEpic 1", "TestDescription"));
-		manager.createSubTask(new SubTask(
+	void shouldDeleteEpics() throws IOException {
+		Epic epic1 = taskManager.createEpic(new Epic("TestEpic 1", "TestDescription"));
+		taskManager.createSubTask(new SubTask(
 				"TestSubTask", NEW, "TestDescription", Instant.now(), 30, epic1.getId()));
-		Epic epic2 = manager.createEpic(new Epic("TestEpic 2", "TestDescription"));
+		Epic epic2 = taskManager.createEpic(new Epic("TestEpic 2", "TestDescription"));
 
-		manager.deleteEpic(epic2.getId());
-		final List<Epic> epics = manager.getEpicList();
+		taskManager.deleteEpic(epic2.getId());
+		final List<Epic> epics = taskManager.getEpicList();
 		assertEquals(1, epics.size(), "Not correct delete epic");
 
-		manager.deleteAllEpics();
-		final List<Epic> epic = manager.getEpicList();
-		final List<SubTask> subTasks = manager.getSubTaskList();
+		taskManager.deleteAllEpics();
+		final List<Epic> epic = taskManager.getEpicList();
+		final List<SubTask> subTasks = taskManager.getSubTaskList();
 		assertEquals(0, epic.size(), "Not correct delete all epics");
 		assertEquals(0, subTasks.size(), "Not correct delete all subTasks from epic");
 	}
 
 	@Test
-	void shouldDeleteSubTasks() {
-		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
-		SubTask subTask1 = manager.createSubTask(new SubTask(
+	void shouldDeleteSubTasks() throws IOException {
+		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
+		SubTask subTask1 = taskManager.createSubTask(new SubTask(
 				"TestSubTask 1", NEW, "TestDescription", Instant.now(), 45, epic.getId()));
-		manager.createSubTask(new SubTask("TestSubTask 1", NEW, "TestDescription",
+		taskManager.createSubTask(new SubTask("TestSubTask 1", NEW, "TestDescription",
 				subTask1.getEndTime().plusMillis(100000), 30, epic.getId()));
 
-		manager.deleteSubTask(subTask1.getId());
-		final List<SubTask> subTasks = manager.getSubTaskList();
+		taskManager.deleteSubTask(subTask1.getId());
+		final List<SubTask> subTasks = taskManager.getSubTaskList();
 		assertEquals(1, subTasks.size(), "Not correct delete subTask");
 
-		final List<SubTask> subTaskByEpic = manager.getSubTasksByEpic(epic);
+		final List<SubTask> subTaskByEpic = taskManager.getSubTasksByEpic(epic.getId());
 		assertEquals(1, subTaskByEpic.size(), "Not correct delete subTask");
 
-		manager.deleteAllSubTasks();
-		final List<SubTask> subTask = manager.getSubTaskList();
+		taskManager.deleteAllSubTasks();
+		final List<SubTask> subTask = taskManager.getSubTaskList();
 		assertEquals(0, subTask.size(), "Not correct delete all subTasks");
 	}
 
 	@Test
-	void shouldChangeEpicStatus() {
-		Epic epic = manager.createEpic(new Epic("TestEpic", "TestDescription"));
+	void shouldChangeEpicStatus() throws IOException {
+		Epic epic = taskManager.createEpic(new Epic("TestEpic", "TestDescription"));
 		assertEquals(Status.NEW, epic.getStatus(), "Incorrect status for new epic");
-		SubTask subTask1 = manager.createSubTask(new SubTask("TestSubTask",
+		SubTask subTask1 = taskManager.createSubTask(new SubTask("TestSubTask",
 				Status.NEW, "TestDescription", Instant.now(), 15, epic.getId()));
-		SubTask subTask2 = manager.createSubTask(new SubTask(
+		SubTask subTask2 = taskManager.createSubTask(new SubTask(
 				"TestSubTask", Status.NEW, "TestDescription",
 				subTask1.getEndTime().plusMillis(100000), 25, epic.getId()));
 		assertEquals(Status.NEW, epic.getStatus(), "Incorrect status for new epic");
 
 		subTask2.setStatus(Status.DONE);
-		manager.updateSubTask(subTask2);
+		taskManager.updateSubTask(subTask2);
 		assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Incorrect status for in progress epic");
 
 		subTask1.setStatus(Status.DONE);
-		manager.updateSubTask(subTask1);
+		taskManager.updateSubTask(subTask1);
 		assertEquals(Status.DONE, epic.getStatus(), "Incorrect status for done epic");
 
 		subTask2.setStatus(Status.IN_PROGRESS);
-		manager.updateSubTask(subTask2);
+		taskManager.updateSubTask(subTask2);
 		assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Incorrect status for in progress epic");
 
 		subTask1.setStatus(Status.IN_PROGRESS);
-		manager.updateSubTask(subTask1);
+		taskManager.updateSubTask(subTask1);
 		assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Incorrect status for in progress epic");
 	}
 }

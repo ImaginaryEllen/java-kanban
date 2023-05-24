@@ -4,6 +4,7 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -19,7 +20,7 @@ class InMemoryHistoryManagerTest {
 	Task task3;
 
 	@BeforeEach
-	void beforeEach() {
+	void beforeEach() throws IOException {
 		historyManager = new InMemoryHistoryManager();
 		taskManager = new InMemoryTaskManager(historyManager);
 		task1 = taskManager.createTask(new Task(

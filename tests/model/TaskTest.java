@@ -5,6 +5,7 @@ import service.InMemoryHistoryManager;
 import service.InMemoryTaskManager;
 import service.TaskManager;
 
+import java.io.IOException;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,7 @@ class TaskTest {
 	TaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
 
 	@Test
-	void shouldReturnCorrectTask() {
+	void shouldReturnCorrectTask() throws IOException {
 		Task task = manager.createTask(new Task(
 				"TestTask", Status.NEW, "TestDescription", Instant.now(), 30));
 

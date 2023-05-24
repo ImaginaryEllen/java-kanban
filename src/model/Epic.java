@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-	private int duration;
-	private Instant startTime;
 	private Instant endTime;
 	private final List<SubTask> subTaskList = new ArrayList<>();
 
@@ -14,14 +12,8 @@ public class Epic extends Task {
 		super(name, Status.NEW, description);
 	}
 
-	@Override
-	public int getDuration() {
-		return duration;
-	}
-
-	@Override
-	public Instant getStartTime() {
-		return startTime;
+	public Epic(int id, String name, Status status, String description) {
+		super(id, name, status, description);
 	}
 
 	@Override
@@ -31,14 +23,14 @@ public class Epic extends Task {
 
 	public void getEpicTime() {
 		int sum = 0;
-		startTime = null;
+		setStartTime(null);
 		endTime = null;
 		for (SubTask subTask : subTaskList) {
 			if (subTask.getStartTime() != null && subTask.getDuration() != 0) {
 				sum += subTask.getDuration();
-				if (startTime == null && endTime == null) {
+				if (getStartTime() == null && endTime == null) {
 					endTime = subTask.getEndTime();
-					startTime = subTask.getStartTime();
+					setStartTime(subTask.getStartTime());
 				}
 				if (subTaskList.size() == 1) {
 					break;
@@ -46,12 +38,12 @@ public class Epic extends Task {
 				if (subTask.getEndTime().isAfter(endTime)) {
 					endTime = subTask.getEndTime();
 				}
-				if (subTask.getStartTime().isBefore(startTime)) {
-					startTime = subTask.getStartTime();
+				if (subTask.getStartTime().isBefore(getStartTime())) {
+					setStartTime(subTask.getStartTime());
 				}
 			}
 		}
-		duration = sum;
+		setDuration(sum);
 	}
 
 	@Override
@@ -75,15 +67,16 @@ public class Epic extends Task {
 		subTaskList.clear();
 	}
 
-
 	@Override
 	public String toString() {
 		return "Epic{" +
 				"" + subTaskList +
 				", id=" + getId() +
-				", " + getName() + '\'' +
-				", " + getStatus() + '\'' +
-				", " + getDescription() + '\'' +
+				", " + getName() +
+				", " + getStatus() +
+				", " + getDescription() +
+				", " + getStartTime() +
+				", " + getDuration() +
 				'}';
 	}
 }
