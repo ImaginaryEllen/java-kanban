@@ -47,6 +47,19 @@ class HttpTaskServerTest {
 		assertEquals(200, response.statusCode(), "Not correct code");
 		assertEquals("Task is create", response.body(), "Task is not create");
 		assertEquals(1, taskServer.httpTaskManager.getTasks().size(), "Not correct size");
+		Task newTask = taskServer.httpTaskManager.getTaskById(1);
+		assertNotNull(newTask);
+		assertEquals(1, newTask.getId(), "Create Task-ID not correct:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(),
+				"Create Task-Name not correct:" + newTask.getName());
+		assertEquals("des", newTask.getDescription(),
+				"Create Task-Description not correct:" + newTask.getDescription());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Create Task-StartTime not correct:" + newTask.getStartTime());
+		assertEquals(Status.NEW, newTask.getStatus(),
+				"Create Task-Status not correct:" + newTask.getStatus());
+		assertEquals(5, newTask.getDuration(),
+				"Create Task-Duration not correct:" + newTask.getDuration());
 	}
 
 	@Test
@@ -61,6 +74,19 @@ class HttpTaskServerTest {
 		assertEquals(200, response.statusCode(), "Not correct code");
 		assertEquals("Epic is create", response.body(), "Epic is not create");
 		assertEquals(1, taskServer.httpTaskManager.getEpics().size(), "Not correct size");
+		Epic newEpic = taskServer.httpTaskManager.getEpicById(1);
+		assertNotNull(newEpic);
+		assertEquals(1, newEpic.getId(), "Create Epic-ID not correct:" + newEpic.getId());
+		assertEquals("TestEpic", newEpic.getName(),
+				"Create Epic-Name not correct:" + newEpic.getName());
+		assertEquals("des", newEpic.getDescription(),
+				"Create Epic-Description not correct:" + newEpic.getDescription());
+		assertNull(newEpic.getStartTime(),
+				"Create Epic-StartTime not correct:" + newEpic.getStartTime());
+		assertEquals(Status.NEW, newEpic.getStatus(),
+				"Create Epic-Status not correct:" + newEpic.getStatus());
+		assertEquals(0, newEpic.getDuration(),
+				"Create Epic-Duration not correct:" + newEpic.getDuration());
 	}
 
 	@Test
@@ -76,6 +102,21 @@ class HttpTaskServerTest {
 				request, HttpResponse.BodyHandlers.ofString());
 		assertEquals(200, response.statusCode(), "Not correct code");
 		assertEquals("SubTask is create", response.body(), "SubTask is not create");
+		SubTask newSubTask = taskServer.httpTaskManager.getSubTaskById(2);
+		assertNotNull(newSubTask);
+		assertEquals(2, newSubTask.getId(), "Create SubTask-ID not correct:" + newSubTask.getId());
+		assertEquals("TestSubTask", newSubTask.getName(),
+				"Create SubTask-Name not correct:" + newSubTask.getName());
+		assertEquals("des", newSubTask.getDescription(),
+				"Create SubTask-Description not correct:" + newSubTask.getDescription());
+		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(),
+				"Create SubTask-StartTime not correct:" + newSubTask.getStartTime());
+		assertEquals(Status.NEW, newSubTask.getStatus(),
+				"Create SubTask-Status not correct:" + newSubTask.getStatus());
+		assertEquals(10, newSubTask.getDuration(),
+				"Create SubTask-Duration not correct:" + newSubTask.getDuration());
+		assertEquals(1, newSubTask.getEpicId(),
+				"Create SubTask-EpicId not correct:" + newSubTask.getEpicId());
 	}
 
 	@Test
@@ -145,12 +186,17 @@ class HttpTaskServerTest {
 		assertNotNull(tasks);
 		Task newTask = tasks.get(0);
 		assertNotNull(newTask);
-		assertEquals(task.getId(), newTask.getId(), "Task-ID not equals");
-		assertEquals(task.getName(), newTask.getName(), "Task-Name not equals");
-		assertEquals(task.getDescription(), newTask.getDescription(), "Task-Description not equals");
-		assertEquals(task.getStartTime(), newTask.getStartTime(), "Task-StartTime not equals");
-		assertEquals(task.getStatus(), newTask.getStatus(), "Task-Status not equals");
-		assertEquals(task.getDuration(), newTask.getDuration(), "Task-Duration not equals");
+		assertEquals(1, newTask.getId(), "Return Task-ID not correct:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(),
+				"Return Task-Name not correct:" + newTask.getName());
+		assertEquals("des", newTask.getDescription(),
+				"Return Task-Description not correct:" + newTask.getDescription());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Return Task-StartTime not correct:" + newTask.getStartTime());
+		assertEquals(Status.NEW, newTask.getStatus(),
+				"Return Task-Status not correct:" + newTask.getStatus());
+		assertEquals(5, newTask.getDuration(),
+				"Return Task-Duration not correct:" + newTask.getDuration());
 	}
 
 	@Test
@@ -169,12 +215,17 @@ class HttpTaskServerTest {
 		assertNotNull(epics);
 		Epic newEpic = epics.get(0);
 		assertNotNull(newEpic);
-		assertEquals(epic.getId(), newEpic.getId(), "Epic-ID not equals");
-		assertEquals(epic.getName(), newEpic.getName(), "Epic-Name not equals");
-		assertEquals(epic.getDescription(), newEpic.getDescription(), "Epic-Description not equals");
-		assertEquals(epic.getStartTime(), newEpic.getStartTime(), "Epic-StartTime not equals");
-		assertEquals(epic.getStatus(), newEpic.getStatus(), "Epic-Status not equals");
-		assertEquals(epic.getDuration(), newEpic.getDuration(), "Epic-Duration not equals");
+		assertEquals(1, newEpic.getId(), "Return Epic-ID not correct:" + newEpic.getId());
+		assertEquals("TestEpic", newEpic.getName(),
+				"Return Epic-Name not correct:" + newEpic.getName());
+		assertEquals("des", newEpic.getDescription(),
+				"Return Epic-Description not correct:" + newEpic.getDescription());
+		assertEquals(epic.getStartTime(), newEpic.getStartTime(),
+				"Return Epic-StartTime not correct:" + newEpic.getStartTime());
+		assertEquals(Status.NEW, newEpic.getStatus(),
+				"Return Epic-Status not correct:" + newEpic.getStatus());
+		assertEquals(0, newEpic.getDuration(),
+				"Return Epic-Duration not correct:" + newEpic.getDuration());
 	}
 
 	@Test
@@ -194,13 +245,19 @@ class HttpTaskServerTest {
 		assertNotNull(subTasks);
 		SubTask newSubTask = subTasks.get(0);
 		assertNotNull(newSubTask);
-		assertEquals(subTask.getId(), newSubTask.getId(), "SubTask-ID not equals");
-		assertEquals(subTask.getName(), newSubTask.getName(), "SubTask-Name not equals");
-		assertEquals(subTask.getDescription(), newSubTask.getDescription(), "SubTask-Description not equals");
-		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(), "SubTask-StartTime not equals");
-		assertEquals(subTask.getStatus(), newSubTask.getStatus(), "SubTask-Status not equals");
-		assertEquals(subTask.getDuration(), newSubTask.getDuration(), "SubTask-Duration not equals");
-		assertEquals(subTask.getEpicId(), newSubTask.getEpicId(), "SubTask-EpicId not equals");
+		assertEquals(2, newSubTask.getId(), "Return SubTask-ID not correct:" + newSubTask.getId());
+		assertEquals("TestSubTask", newSubTask.getName(),
+				"Return SubTask-Name not correct:" + newSubTask.getName());
+		assertEquals("des", newSubTask.getDescription(),
+				"Return SubTask-Description not correct:" + newSubTask.getDescription());
+		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(),
+				"Return SubTask-StartTime not correct:" + newSubTask.getStartTime());
+		assertEquals(Status.NEW, newSubTask.getStatus(),
+				"Return SubTask-Status not correct:" + newSubTask.getStatus());
+		assertEquals(10, newSubTask.getDuration(),
+				"Return SubTask-Duration not correct:" + newSubTask.getDuration());
+		assertEquals(1, newSubTask.getEpicId(),
+				"Return SubTask-EpicId not correct:" + newSubTask.getEpicId());
 	}
 
 	@Test
@@ -261,12 +318,17 @@ class HttpTaskServerTest {
 		assertEquals(json, response.body(), "Not correct return Task");
 		Task newTask = gson.fromJson(response.body(), Task.class);
 		assertNotNull(newTask);
-		assertEquals(task.getId(), newTask.getId(), "Task-ID not equals");
-		assertEquals(task.getName(), newTask.getName(), "Task-Name not equals");
-		assertEquals(task.getDescription(), newTask.getDescription(), "Task-Description not equals");
-		assertEquals(task.getStartTime(), newTask.getStartTime(), "Task-StartTime not equals");
-		assertEquals(task.getStatus(), newTask.getStatus(), "Task-Status not equals");
-		assertEquals(task.getDuration(), newTask.getDuration(), "Task-Duration not equals");
+		assertEquals(1, newTask.getId(), "Return By Id Task-ID not correct:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(),
+				"Return By Id Task-Name not correct:" + newTask.getName());
+		assertEquals("des", newTask.getDescription(),
+				"Return By Id Task-Description not correct:" + newTask.getDescription());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Return By Id Task-StartTime not correct:" + newTask.getStartTime());
+		assertEquals(Status.NEW, newTask.getStatus(),
+				"Return By Id Task-Status not correct:" + newTask.getStatus());
+		assertEquals(5, newTask.getDuration(),
+				"Return By Id Task-Duration not correct:" + newTask.getDuration());
 	}
 
 	@Test
@@ -281,12 +343,17 @@ class HttpTaskServerTest {
 		assertEquals(json, response.body(), "Not correct return Epic");
 		Epic newEpic = gson.fromJson(response.body(), Epic.class);
 		assertNotNull(newEpic);
-		assertEquals(epic.getId(), newEpic.getId(), "Epic-ID not equals");
-		assertEquals(epic.getName(), newEpic.getName(), "Epic-Name not equals");
-		assertEquals(epic.getDescription(), newEpic.getDescription(), "Epic-Description not equals");
-		assertEquals(epic.getStartTime(), newEpic.getStartTime(), "Epic-StartTime not equals");
-		assertEquals(epic.getStatus(), newEpic.getStatus(), "Epic-Status not equals");
-		assertEquals(epic.getDuration(), newEpic.getDuration(), "Epic-Duration not equals");
+		assertEquals(1, newEpic.getId(), "Return By Id Epic-ID not correct:" + newEpic.getId());
+		assertEquals("TestEpic", newEpic.getName(),
+				"Return By Id Epic-Name not correct:" + newEpic.getName());
+		assertEquals("des", newEpic.getDescription(),
+				"Return By Id Epic-Description not correct:" + newEpic.getDescription());
+		assertEquals(epic.getStartTime(), newEpic.getStartTime(),
+				"Return By Id Epic-StartTime not correct:" + newEpic.getStartTime());
+		assertEquals(Status.NEW, newEpic.getStatus(),
+				"Return By Id Epic-Status not correct:" + newEpic.getStatus());
+		assertEquals(0, newEpic.getDuration(),
+				"Return By Id Epic-Duration not correct:" + newEpic.getDuration());
 	}
 
 	@Test
@@ -303,13 +370,19 @@ class HttpTaskServerTest {
 		assertEquals(json, response.body(), "Not correct return SubTask");
 		SubTask newSubTask = gson.fromJson(response.body(), SubTask.class);
 		assertNotNull(newSubTask);
-		assertEquals(subTask.getId(), newSubTask.getId(), "SubTask-ID not equals");
-		assertEquals(subTask.getName(), newSubTask.getName(), "SubTask-Name not equals");
-		assertEquals(subTask.getDescription(), newSubTask.getDescription(), "SubTask-Description not equals");
-		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(), "SubTask-StartTime not equals");
-		assertEquals(subTask.getStatus(), newSubTask.getStatus(), "SubTask-Status not equals");
-		assertEquals(subTask.getDuration(), newSubTask.getDuration(), "SubTask-Duration not equals");
-		assertEquals(subTask.getEpicId(), newSubTask.getEpicId(), "SubTask-EpicId not equals");
+		assertEquals(2, newSubTask.getId(), "Return By Id SubTask-ID not correct:" + newSubTask.getId());
+		assertEquals("TestSubTask", newSubTask.getName(),
+				"Return By Id SubTask-Name not correct:" + newSubTask.getName());
+		assertEquals("des", newSubTask.getDescription(),
+				"Return By Id SubTask-Description not correct:" + newSubTask.getDescription());
+		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(),
+				"Return By Id SubTask-StartTime not correct:" + newSubTask.getStartTime());
+		assertEquals(Status.NEW, newSubTask.getStatus(),
+				"Return By Id SubTask-Status not correct:" + newSubTask.getStatus());
+		assertEquals(10, newSubTask.getDuration(),
+				"Return By Id SubTask-Duration not correct:" + newSubTask.getDuration());
+		assertEquals(1, newSubTask.getEpicId(),
+				"Return By Id SubTask-EpicId not correct:" + newSubTask.getEpicId());
 	}
 
 	@Test
@@ -383,19 +456,24 @@ class HttpTaskServerTest {
 		assertNotNull(tasks);
 		Task newTask = tasks.get(0);
 		assertNotNull(newTask);
-		assertEquals(task.getId(), newTask.getId(), "Task-ID not equals");
-		assertEquals(task.getName(), newTask.getName(), "Task-Name not equals");
-		assertEquals(task.getDescription(), newTask.getDescription(), "Task-Description not equals");
-		assertEquals(task.getStartTime(), newTask.getStartTime(), "Task-StartTime not equals");
-		assertEquals(task.getStatus(), newTask.getStatus(), "Task-Status not equals");
-		assertEquals(task.getDuration(), newTask.getDuration(), "Task-Duration not equals");
+		assertEquals(1, newTask.getId(), "Return History Task-ID not correct:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(),
+				"Return History Task-Name not correct:" + newTask.getName());
+		assertEquals("des", newTask.getDescription(),
+				"Return History Task-Description not correct:" + newTask.getDescription());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Return History Task-StartTime not correct:" + newTask.getStartTime());
+		assertEquals(Status.NEW, newTask.getStatus(),
+				"Return History Task-Status not correct:" + newTask.getStatus());
+		assertEquals(5, newTask.getDuration(),
+				"Return History Task-Duration not correct:" + newTask.getDuration());
 	}
 
 	@Test
 	void shouldReturnPrioritizedTasks() throws IOException, InterruptedException {
-		taskServer.httpTaskManager.createTask(new Task(
+		Task task1 = taskServer.httpTaskManager.createTask(new Task(
 				"Task 1", Status.IN_PROGRESS, "des", Instant.now(), 5));
-		taskServer.httpTaskManager.createTask(new Task(
+		Task task2 = taskServer.httpTaskManager.createTask(new Task(
 				"Task 2", Status.NEW, "des", Instant.now().plusSeconds(500000), 10));
 		String json = gson.toJson(taskServer.httpTaskManager.getPrioritizedTasks());
 		URI url = URI.create("http://localhost:8080/tasks/");
@@ -417,9 +495,30 @@ class HttpTaskServerTest {
 		}.getType());
 		assertNotNull(tasksReturn);
 		Task returnTask1 = tasksReturn.get(0);
+		assertEquals("Task 1", returnTask1.getName(),
+				"Return Task-Name not correct:" + returnTask1.getName());
+		assertEquals("des", returnTask1.getDescription(),
+				"Return Task-Description not correct:" + returnTask1.getDescription());
+		assertEquals(task1.getStartTime(), returnTask1.getStartTime(),
+				"Return Task-StartTime not correct:" + returnTask1.getStartTime());
+		assertEquals(Status.IN_PROGRESS, returnTask1.getStatus(),
+				"Return Task-Status not correct:" + returnTask1.getStatus());
+		assertEquals(5, returnTask1.getDuration(),
+				"Return Task-Duration not correct:" + returnTask1.getDuration());
 		Task returnTask2 = tasksReturn.get(1);
+		assertEquals("Task 2", returnTask2.getName(),
+				"Return Task-Name not correct:" + returnTask2.getName());
+		assertEquals("des", returnTask2.getDescription(),
+				"Return Task-Description not correct:" + returnTask2.getDescription());
+		assertEquals(task2.getStartTime(), returnTask2.getStartTime(),
+				"Return Task-StartTime not correct:" + returnTask2.getStartTime());
+		assertEquals(Status.NEW, returnTask2.getStatus(),
+				"Return Task-Status not correct:" + returnTask2.getStatus());
+		assertEquals(10, returnTask2.getDuration(),
+				"Return Task-Duration not correct:" + returnTask2.getDuration());
 		boolean newTask1BeforeNewTask2 = returnTask1.getEndTime().isBefore(returnTask2.getStartTime());
 		assertTrue(newTask1BeforeNewTask2, "Not correct return Prioritized List");
+
 	}
 
 	@AfterEach

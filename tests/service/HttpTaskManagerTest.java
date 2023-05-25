@@ -19,54 +19,95 @@ class HttpTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 	KVServer server;
 
 	@BeforeEach
-	protected void beforeEach() throws IOException, InterruptedException {
+	protected void beforeAll() throws IOException {
 		server = new KVServer();
 		server.start();
 		taskManager = new HttpTaskManager();
 	}
 
 	@Test
-	void shouldSaveInAndLoadTasks() throws IOException {
+	void shouldSaveAndLoadTasks() throws IOException {
 		Task task = taskManager.createTask(new Task(
 				"TestTask", NEW, "TestDescription", Instant.now(), 15));
+		assertEquals(1, taskManager.tasks.size(), "Incorrect size of tasks:" + taskManager.tasks.size());
+		taskManager.save();
+		taskManager.load();
+		assertNotNull(task, "Not save and load task");
+		Task newTask = taskManager.tasks.get(1);
+		assertEquals(1, newTask.getId(), "Incorrect load Id for task:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(), "Incorrect Name for task:" + newTask.getName());
+		assertEquals("TestDescription", newTask.getDescription(),
+				"Incorrect Description for task:" + newTask.getDescription());
+		assertEquals(NEW, newTask.getStatus(), "Incorrect load Status for task:" + newTask.getStatus());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Incorrect load StartTime for task:" + newTask.getStartTime());
+		assertEquals(15, newTask.getDuration(), "Incorrect load Duration for task:" + newTask.getId());
+	}
+
+	@Test
+	void shouldSaveAndLoadEpics() throws IOException {
+		Epic epic = taskManager.createEpic(new Epic(
+				"TestEpic", "TestDescription"));
+		assertEquals(1, taskManager.epics.size(), "Incorrect size of epics:" + taskManager.epics.size());
+		taskManager.save();
+		taskManager.load();
+		assertNotNull(epic, "Not save and load epic");
+		Epic newEpic = taskManager.epics.get(1);
+		assertEquals(1, newEpic.getId(), "Incorrect load Id for epic:" + newEpic.getId());
+		assertEquals("TestEpic", newEpic.getName(), "Incorrect Name for epic:" + newEpic.getName());
+		assertEquals("TestDescription", newEpic.getDescription(),
+				"Incorrect Description for epic:" + newEpic.getDescription());
+		assertEquals(NEW, newEpic.getStatus(), "Incorrect load Status for epic:" + newEpic.getStatus());
+		assertNull(newEpic.getStartTime(),
+				"Incorrect load StartTime for epic:" + newEpic.getStartTime());
+		assertEquals(0, newEpic.getDuration(), "Incorrect load Duration for epic:" + newEpic.getId());
+	}
+
+	@Test
+	void shouldSaveAndLoadSubTasks() throws IOException {
 		Epic epic = taskManager.createEpic(new Epic(
 				"TestEpic", "TestDescription"));
 		SubTask subTask = taskManager.createSubTask(new SubTask("TestSubTask", NEW, "TestDescription",
-				task.getEndTime().plusMillis(100000), 30, epic.getId()));
-		assertEquals(1, taskManager.tasks.size(), "Incorrect size of tasks");
-		assertEquals(1, taskManager.epics.size(), "Incorrect size of epics");
-		assertEquals(1, taskManager.subTasks.size(), "Incorrect size of subTasks");
+				Instant.now(), 30, epic.getId()));
+		assertEquals(1, taskManager.subTasks.size(),
+				"Incorrect size of subTasks:" + taskManager.subTasks.size());
 		taskManager.save();
 		taskManager.load();
-		Task newTask = taskManager.tasks.get(1);
-		Epic newEpic = taskManager.epics.get(2);
-		SubTask newSubTask = taskManager.subTasks.get(3);
-		assertEquals(task.getId(), newTask.getId(), "Incorrect return Id for task");
-		assertEquals(epic.getId(), newEpic.getId(), "Incorrect return Id for epic");
-		assertEquals(subTask.getId(), newSubTask.getId(), "Incorrect return Id for subTask");
-		assertEquals(task.getName(), newTask.getName(), "Incorrect return Name for task");
-		assertEquals(epic.getName(), newEpic.getName(), "Incorrect return Name for epic");
-		assertEquals(subTask.getName(), newSubTask.getName(), "Incorrect return Name for subTask");
-		assertEquals(task.getStatus(), newTask.getStatus(), "Incorrect return Status for task");
-		assertEquals(epic.getStatus(), newEpic.getStatus(), "Incorrect return Status for epic");
-		assertEquals(subTask.getStatus(), newSubTask.getStatus(), "Incorrect return Status for subTask");
-		assertEquals(task.getDescription(), newTask.getDescription(), "Incorrect return Description for task");
-		assertEquals(epic.getDescription(), newEpic.getDescription(), "Incorrect return Description for epic");
-		assertEquals(subTask.getDescription(), newSubTask.getDescription(), "Incorrect return Description for subTask");
-		taskManager.getTaskById(task.getId());
-		taskManager.save();
-		taskManager.load();
+		assertNotNull(subTask, "Not save and load subTask");
+		SubTask newSubTask = taskManager.subTasks.get(2);
+		assertEquals(2, newSubTask.getId(), "Incorrect load Id for task:" + newSubTask.getId());
+		assertEquals("TestSubTask", newSubTask.getName(), "Incorrect Name for task:" + newSubTask.getName());
+		assertEquals("TestDescription", newSubTask.getDescription(),
+				"Incorrect Description for task:" + newSubTask.getDescription());
+		assertEquals(NEW, newSubTask.getStatus(), "Incorrect load Status for task:" + newSubTask.getStatus());
+		assertEquals(subTask.getStartTime(), newSubTask.getStartTime(),
+				"Incorrect load StartTime for task:" + newSubTask.getStartTime());
+		assertEquals(30, newSubTask.getDuration(), "Incorrect load Duration for task:" + newSubTask.getId());
+	}
+
+	@Test
+	void shouldSaveAndLoadHistory() throws IOException {
+		Task task = taskManager.createTask(new Task(
+		"TestTask", NEW, "TestDescription", Instant.now(), 15));
+		taskManager.getTaskById(1);
 		List<Task> history = taskManager.getHistory();
-		assertNotNull(history, "History is empty");
-		assertEquals(task.getId(), history.get(0).getId(), "Incorrect task from history");
-		taskManager.getEpicById(epic.getId());
-		taskManager.getSubTaskById(subTask.getId());
+		assertNotNull(history, "Incorrect history list");
 		taskManager.save();
 		taskManager.load();
-		List<Task> allHistory = taskManager.getHistory();
-		assertNotNull(allHistory, "History is empty");
-		assertEquals(epic.getId(), allHistory.get(1).getId(), "Incorrect epic from history");
-		assertEquals(subTask.getId(), allHistory.get(2).getId(), "Incorrect subTask from history");
+		List<Task> newHistory = taskManager.getHistory();
+		assertNotNull(newHistory, "History is empty");
+		Task newTask = newHistory.get(0);
+		assertEquals(1, newTask.getId(), "Incorrect task Id from history:" + newTask.getId());
+		assertEquals("TestTask", newTask.getName(),
+				"Incorrect Name for task from history:" + newTask.getName());
+		assertEquals("TestDescription", newTask.getDescription(),
+				"Incorrect Description for task:" + newTask.getDescription());
+		assertEquals(NEW, newTask.getStatus(),
+				"Incorrect load Status for task from history:" + newTask.getStatus());
+		assertEquals(task.getStartTime(), newTask.getStartTime(),
+				"Incorrect load StartTime for task from history:" + newTask.getStartTime());
+		assertEquals(15, newTask.getDuration(),
+				"Incorrect load Duration for task from history:" + newTask.getId());
 	}
 
 	@AfterEach

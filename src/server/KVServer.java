@@ -52,13 +52,13 @@ public class KVServer {
 				h.sendResponseHeaders(405, 0);
 			}
 		} catch (IOException e) {
-			throw new ManagerException("Error: LOAD IN KVServer");
+			throw new ManagerException("Error: LOAD IN KVServer", e);
 		} finally {
 			h.close();
 		}
 	}
 
-	private void save(HttpExchange h) throws IOException {
+	private void save(HttpExchange h) {
 		try {
 			System.out.println("\n/save");
 			if (!hasAuth(h)) {
@@ -86,20 +86,28 @@ public class KVServer {
 				System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
 				h.sendResponseHeaders(405, 0);
 			}
+		} catch (IOException e) {
+			throw new ManagerException("Error: SAVE IN KVServer", e);
 		} finally {
 			h.close();
 		}
 	}
 
-	private void register(HttpExchange h) throws IOException {
+	private void register(HttpExchange h) {
 		try {
 			System.out.println("\n/register");
 			if ("GET".equals(h.getRequestMethod())) {
-				sendText(h, apiToken);
+				try {
+					sendText(h, apiToken);
+				} catch (IOException e) {
+					throw new ManagerException("Error: REGISTER IN KVServer(sendText)", e);
+				}
 			} else {
 				System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
 				h.sendResponseHeaders(405, 0);
 			}
+		} catch (IOException e) {
+			throw new ManagerException("Error: REGISTER IN KVServer", e);
 		} finally {
 			h.close();
 		}
