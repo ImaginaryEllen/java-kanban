@@ -10,7 +10,7 @@ import java.time.Instant;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException {
 
 		KVServer server = new KVServer();
 		server.start();
@@ -24,8 +24,6 @@ public class Main {
 				"SubTask 1", Status.NEW, "Description",
 				task.getEndTime().plusMillis(100000), 15, epic.getId()));
 
-		taskServer.start();
-
 		System.out.println("История после создания задач: " + taskServer.getHttpTaskManager().getHistory());
 
 		taskServer.getHttpTaskManager().getTaskById(1);
@@ -34,8 +32,8 @@ public class Main {
 		taskServer.getHttpTaskManager().getEpicById(2);
 		System.out.println("История после вызова epic: " + taskServer.getHttpTaskManager().getHistory());
 
-		taskServer.getHttpTaskManager().getEpicById(2);
 		taskServer.getHttpTaskManager().getTaskById(1);
+		taskServer.getHttpTaskManager().getEpicById(2);
 		System.out.println("История после повтора: " + taskServer.getHttpTaskManager().getHistory());
 
 		taskServer.getHttpTaskManager().getSubTaskById(3);
@@ -46,7 +44,6 @@ public class Main {
 		taskServer.getHttpTaskManager().deleteAllEpics();
 		System.out.println("История после удаления epics: " + taskServer.getHttpTaskManager().getHistory());
 
-		taskServer.stop();
 		server.stop();
 	}
 }

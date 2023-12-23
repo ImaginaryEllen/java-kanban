@@ -16,7 +16,7 @@ public class HttpTaskServer {
 	protected HttpServer server;
 	protected HttpTaskManager httpTaskManager;
 
-	public HttpTaskServer() throws IOException, InterruptedException {
+	public HttpTaskServer() throws IOException {
 		this.httpTaskManager = Managers.getDefaultTaskManager();
 		server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
 		server.createContext("/tasks/task", new TaskHandler(httpTaskManager));
@@ -26,18 +26,17 @@ public class HttpTaskServer {
 		server.createContext("/tasks/", new PrioritizedHandler(httpTaskManager));
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException {
 
-		new KVServer().start();
-
+		KVServer kv = new KVServer();
+		kv.start();
 		HttpTaskServer taskServer = new HttpTaskServer();
+		taskServer.start();
 		Task task = taskServer.httpTaskManager.createTask(new Task("Task", Status.NEW,
 				"D", Instant.now(), 15));
 		Epic epic = taskServer.httpTaskManager.createEpic(new Epic("Epic", "D"));
 		SubTask subTask = taskServer.httpTaskManager.createSubTask(new SubTask("SubTask", Status.NEW,
 				"D", task.getEndTime().plusMillis(100000), 10, epic.getId()));
-
-		taskServer.start();
 
 		System.out.println("Tasks before: ");
 		System.out.println(task);
@@ -53,6 +52,7 @@ public class HttpTaskServer {
 		System.out.println(taskServer.httpTaskManager.getSubTasks());
 
 		taskServer.stop();
+		kv.stop();
 	}
 
 	public HttpTaskManager getHttpTaskManager() {
@@ -61,6 +61,7 @@ public class HttpTaskServer {
 
 	public void start() {
 		System.out.println("Запускаем сервер на порту " + PORT);
+		System.out.println("Открой в браузере http://localhost:" + PORT + "/");
 		server.start();
 	}
 

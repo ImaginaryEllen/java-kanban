@@ -15,7 +15,6 @@ public class KVTaskClient {
 
 		public KVTaskClient(String url) {
 			this.url = url;
-			this.httpClient = HttpClient.newHttpClient();
 			register();
 	}
 
@@ -45,7 +44,7 @@ public class KVTaskClient {
 				.uri(URI.create(url + "load/" + key + "?" + "API_TOKEN=" + apiToken))
 				.build();
 		HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-		HttpResponse<String> response = null;
+		HttpResponse<String> response;
 		try {
 			response = httpClient.send(request, handler);
 		} catch (IOException e) {

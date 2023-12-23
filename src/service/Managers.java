@@ -4,12 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import adapter.InstantAdapter;
 
-import java.io.IOException;
 import java.time.Instant;
 
 public class Managers {
 
-	public static HttpTaskManager getDefaultTaskManager() throws IOException, InterruptedException {
+	public static HttpTaskManager getDefaultTaskManager() {
 		return new HttpTaskManager();
 	}
 

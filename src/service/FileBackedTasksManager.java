@@ -6,7 +6,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -38,26 +37,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 		System.out.println(fileManager.getEpicList());
 		System.out.println(fileManager.getSubTaskList());
 		System.out.println((fileManager.getHistory()));
-	}
-
-	@Override
-	public HashMap<Integer, Task> getTasks() {
-		return super.getTasks();
-	}
-
-	@Override
-	public HashMap<Integer, Epic> getEpics() {
-		return super.getEpics();
-	}
-
-	@Override
-	public HashMap<Integer, SubTask> getSubTasks() {
-		return super.getSubTasks();
-	}
-
-	@Override
-	public void setIdNumber(int idNumber) {
-		super.setIdNumber(idNumber);
 	}
 
 	@Override
@@ -226,15 +205,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 				final Task task = fromString(line);
 				switch (type) {
 					case TASK:
-						tasks.put(task.getId(), task);
+						getTasks().put(task.getId(), task);
 						break;
 					case EPIC:
-						epics.put(task.getId(), (Epic) task);
+						getEpics().put(task.getId(), (Epic) task);
 						break;
 					case SUBTASK:
-						subTasks.put(task.getId(), (SubTask) task);
-						if (epics.get(((SubTask) task).getEpicId()) != null) {
-							epics.get(((SubTask) task).getEpicId()).addToSubTaskList((SubTask) task);
+						super.getSubTasks().put(task.getId(), (SubTask) task);
+						if (getEpics().get(((SubTask) task).getEpicId()) != null) {
+							getEpics().get(((SubTask) task).getEpicId()).addToSubTaskList((SubTask) task);
 						}
 						break;
 				}
@@ -246,12 +225,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 			String line = reader.readLine();
 			final List<Integer> idFromHistory = historyFromString(line);
 			for (Integer id : idFromHistory) {
-				if (tasks.containsKey(id)) {
-					getHistoryManager().add(tasks.get(id));
-				} else if (epics.containsKey(id)) {
-					getHistoryManager().add(epics.get(id));
+				if (getTasks().containsKey(id)) {
+					getHistoryManager().add(getTasks().get(id));
+				} else if (getEpics().containsKey(id)) {
+					getHistoryManager().add(getEpics().get(id));
 				} else {
-					getHistoryManager().add(subTasks.get(id));
+					getHistoryManager().add(getSubTasks().get(id));
 				}
 			}
 		} catch (IOException exception) {

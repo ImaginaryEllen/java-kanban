@@ -25,10 +25,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
 	@Override
 	public void save() {
-		client.put("tasks", gson.toJson(tasks));
-		client.put("epics", gson.toJson(epics));
-		client.put("subTasks", gson.toJson(subTasks));
-		client.put("history", gson.toJson(historyManager.getHistory().stream()
+		client.put("tasks", gson.toJson(getTasks()));
+		client.put("epics", gson.toJson(getEpics()));
+		client.put("subTasks", gson.toJson(getSubTasks()));
+		client.put("history", gson.toJson(getHistoryManager().getHistory().stream()
 				.map(Task::getId)
 				.collect(Collectors.toList())));
 	}
@@ -36,19 +36,19 @@ public class HttpTaskManager extends FileBackedTasksManager {
 	@Override
 	public void load() {
 		String jsonTasks = client.load("tasks");
-		tasks = gson.fromJson(
+		setTasks(gson.fromJson(
 				jsonTasks, new TypeToken<HashMap<Integer, Task>>() {
-				}.getType());
+				}.getType()));
 
 		String jsonEpics = client.load("epics");
-		epics = gson.fromJson(
+		setEpics(gson.fromJson(
 				jsonEpics, new TypeToken<HashMap<Integer, Epic>>() {
-				}.getType());
+				}.getType()));
 
 		String jsonSubTasks = client.load("subTasks");
-		subTasks = gson.fromJson(
+		setSubTasks(gson.fromJson(
 				jsonSubTasks, new TypeToken<HashMap<Integer, SubTask>>() {
-				}.getType());
+				}.getType()));
 
 		String jsonHistory = client.load("history");
 		ArrayList<Integer> historyId = gson.fromJson(
@@ -62,12 +62,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
 	}
 
 	private void getHistoryTask(int id) {
-			if (tasks.get(id) != null) {
-				historyManager.add(tasks.get(id));
-			} else if (epics.get(id) != null) {
-				historyManager.add(epics.get(id));
-			} else if (subTasks.get(id) != null) {
-				historyManager.add(subTasks.get(id));
+			if (getTasks().get(id) != null) {
+				getHistoryManager().add(getTasks().get(id));
+			} else if (getEpics().get(id) != null) {
+				getHistoryManager().add(getEpics().get(id));
+			} else if (getSubTasks().get(id) != null) {
+				getHistoryManager().add(getSubTasks().get(id));
 			}
 	}
 }

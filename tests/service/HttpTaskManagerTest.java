@@ -29,11 +29,12 @@ class HttpTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 	void shouldSaveAndLoadTasks() throws IOException {
 		Task task = taskManager.createTask(new Task(
 				"TestTask", NEW, "TestDescription", Instant.now(), 15));
-		assertEquals(1, taskManager.tasks.size(), "Incorrect size of tasks:" + taskManager.tasks.size());
+		assertEquals(1, taskManager.getTasks().size(),
+				"Incorrect size of tasks:" + taskManager.getTasks().size());
 		taskManager.save();
 		taskManager.load();
 		assertNotNull(task, "Not save and load task");
-		Task newTask = taskManager.tasks.get(1);
+		Task newTask = taskManager.getTasks().get(1);
 		assertEquals(1, newTask.getId(), "Incorrect load Id for task:" + newTask.getId());
 		assertEquals("TestTask", newTask.getName(), "Incorrect Name for task:" + newTask.getName());
 		assertEquals("TestDescription", newTask.getDescription(),
@@ -48,11 +49,12 @@ class HttpTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 	void shouldSaveAndLoadEpics() throws IOException {
 		Epic epic = taskManager.createEpic(new Epic(
 				"TestEpic", "TestDescription"));
-		assertEquals(1, taskManager.epics.size(), "Incorrect size of epics:" + taskManager.epics.size());
+		assertEquals(1, taskManager.getEpics().size(),
+				"Incorrect size of epics:" + taskManager.getEpics().size());
 		taskManager.save();
 		taskManager.load();
 		assertNotNull(epic, "Not save and load epic");
-		Epic newEpic = taskManager.epics.get(1);
+		Epic newEpic = taskManager.getEpics().get(1);
 		assertEquals(1, newEpic.getId(), "Incorrect load Id for epic:" + newEpic.getId());
 		assertEquals("TestEpic", newEpic.getName(), "Incorrect Name for epic:" + newEpic.getName());
 		assertEquals("TestDescription", newEpic.getDescription(),
@@ -69,12 +71,12 @@ class HttpTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 				"TestEpic", "TestDescription"));
 		SubTask subTask = taskManager.createSubTask(new SubTask("TestSubTask", NEW, "TestDescription",
 				Instant.now(), 30, epic.getId()));
-		assertEquals(1, taskManager.subTasks.size(),
-				"Incorrect size of subTasks:" + taskManager.subTasks.size());
+		assertEquals(1, taskManager.getSubTasks().size(),
+				"Incorrect size of subTasks:" + taskManager.getSubTasks().size());
 		taskManager.save();
 		taskManager.load();
 		assertNotNull(subTask, "Not save and load subTask");
-		SubTask newSubTask = taskManager.subTasks.get(2);
+		SubTask newSubTask = taskManager.getSubTasks().get(2);
 		assertEquals(2, newSubTask.getId(), "Incorrect load Id for task:" + newSubTask.getId());
 		assertEquals("TestSubTask", newSubTask.getName(), "Incorrect Name for task:" + newSubTask.getName());
 		assertEquals("TestDescription", newSubTask.getDescription(),
